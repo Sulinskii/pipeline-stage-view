@@ -140,48 +140,21 @@ function addStageTotals(runGroup) {
         }
 
         if (run.stages) {
-
             for (var ii = 0; ii < run.stages.length; ii++) {
                 var stage = run.stages[ii];
                 var stageData = getStageData(stage.name, runGroup);
-                /*if(stage.status === 'SKIPPED'){
-                    if (!stageData) {
-                        stageData = {name: stage.name};
-                        runGroup.stageData.push(stageData);
-                            }
-                    if (stageData.runs === undefined) {
-                        stageData.runs = 0;
-                        stageData.durationMillis = 0;
-                        stageData.durationMillisNoPause = 0;
-                        stageData.avgDurationMillis = 0;
-                    }
-                    stageData.runs++;
-                    if(isNaN(stageData.avgDurationMillisNoPause)){
-                    stage.durationMillisNoPause = stage.durationMillis - stage.pauseDurationMillis;
-                    stageData.durationMillis += stage.durationMillis;
-                    stageData.durationMillisNoPause += Math.floor(0.3);
-                    stageData.avgDurationMillis = Math.floor(stageData.durationMillis / stageData.runs);
-                    stageData.avgDurationMillisNoPause = Math.floor(0.3);
-                    }
-                    stage.emphasise = (stage.durationMillisNoPause / run.durationMillisNoPause / 2) + 1;
-                    stage.emphasise = Math.min(stage.emphasise, 1.5);
-                    stageData.runs--;
-
-                }*/
                 if (stage.status !== 'NOT_EXECUTED') {
                     runGroup.numStages++;
                     if (!stageData) {
                         stageData = {name: stage.name};
                         runGroup.stageData.push(stageData);
                     }
-
                     if (stageData.runs === undefined) {
                         stageData.runs = 0;
                         stageData.durationMillis = 0;
                         stageData.durationMillisNoPause = 0;
                         stageData.avgDurationMillis = 0;
                     }
-
                     stage.durationMillisNoPause = stage.durationMillis - stage.pauseDurationMillis;
                     stageData.runs++;
                     if(stage.status === 'SKIPPED'){

@@ -90,40 +90,31 @@ public class ChunkVisitor extends StandardChunkVisitor {
     protected void handleChunkDone(@Nonnull MemoryFlowChunk chunk) {
         StageNodeExt stageExt = new StageNodeExt();
         TimingInfo times;
-        boolean skippedStage = isSkippedStage(chunk.getFirstNode());
-        /*if(skippedStage){
-            times = null;
-        }
-         else */ if (firstExecuted != null) {
+        if (firstExecuted != null) {
             FlowNode last = (chunk.getLastNode() != null) ? chunk.getLastNode() : chunk.getFirstNode(); // Extra safety measure for accidental nesting
             times = StatusAndTiming.computeChunkTiming(run, chunk.getPauseTimeMillis(), firstExecuted, last, chunk.getNodeAfter());
         } else {  // Stage never really ran :)
             times = new TimingInfo(0, 0, run.getStartTimeInMillis());
         }
-        //Ustawianie czasu dla stage
         ExecDuration dur = (times == null) ? new ExecDuration() : new ExecDuration(times);
 
         GenericStatus status;
         long startTime = 0;
 
-        if(skippedStage){
-            status = null;
+        if(isSkippedStage(chunk.getFirstNode())){
+            stageExt.addBasicNodeData(chunk.getFirstNode(), "", dur, startTime, StatusExt.SKIPPED, chunk.getLastNode().getError());
         }
         else if (firstExecuted == null) {
-            status = GenericStatus.NOT_EXECUTED;
+            stageExt.addBasicNodeData(chunk.getFirstNode(), "", dur, startTime, StatusExt.NOT_EXECUTED, chunk.getLastNode().getError());
         } else {
             status = StatusAndTiming.computeChunkStatus(run, chunk.getNodeBefore(), firstExecuted, chunk.getLastNode(), chunk.getNodeAfter());
+            stageExt.addBasicNodeData(chunk.getFirstNode(), "", dur, startTime, StatusExt.fromGenericStatus(status), chunk.getLastNode().getError());
             startTime = TimingAction.getStartTime(firstExecuted);
         }
 
         // TODO add and use pipeline graph analysis API to allow us to get most of the metadata for the chunk in 1 pass, efficiently
         //  and only store the FlowNodes -- not the materialized objects.
-        if(status!=null) {
-            stageExt.addBasicNodeData(chunk.getFirstNode(), "", dur, startTime, StatusExt.fromGenericStatus(status), chunk.getLastNode().getError());
-        }
-        else{
-            stageExt.addBasicNodeData(chunk.getFirstNode(), "", dur, startTime, StatusExt.SKIPPED, chunk.getLastNode().getError());
-        }
+
 
         int childNodeLength = Math.min(StageNodeExt.MAX_CHILD_NODES, stageContents.size());
         ArrayList<AtomFlowNodeExt> internals = new ArrayList<AtomFlowNodeExt>(childNodeLength);

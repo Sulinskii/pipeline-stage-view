@@ -88,9 +88,6 @@
                 {{#ifCond this.status '===' 'SUCCESS'}}
                     <div cbwf-controller="stage-actions-popover" descUrl="{{this._links.self.href}}" notIf="stage-actions-popover,stage-failed-popover" caption="Success" />
                 {{/ifCond}}
-                {{#ifCond this.status '===' 'SKIPPED'}}
-                    <div cbwf-controller="stage-actions-popover" descUrl="{{this._links.self.href}}" notIf="stage-actions-popover,stage-failed-popover" caption="Skipped" />
-                {{/ifCond}}
                 {{#ifCond this.status '===' 'IN_PROGRESS'}}
                     <div cbwf-controller="stage-actions-popover" descUrl="{{this._links.self.href}}" notIf="stage-actions-popover,stage-failed-popover" caption="In Progress" />
                 {{/ifCond}}
